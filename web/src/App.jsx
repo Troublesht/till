@@ -417,6 +417,61 @@ function Security() {
   );
 }
 
+/* ---------------- faq ---------------- */
+
+const FAQ = [
+  {
+    q: "so… who buys?",
+    a: "Anyone with a NEAR wallet — a human, a bot, or another AI agent. In the demo a customer key signs the purchases (scripts/demo.js), and on the local server any wallet can buy. The selling side is autonomous; the buying side is deliberately open. That's the design, not a gap.",
+  },
+  {
+    q: "what's the actual use case?",
+    a: "Unstaffed micro-retail — a vending machine or corner shelf that reprices on demand, restocks, and settles with the supplier on-chain: no back office, no invoices, a public P&L. And a reference implementation of agent-to-agent commerce: a selling agent whose financial authority is a scoped on-chain key, so it can't be abused even if compromised.",
+  },
+  {
+    q: "why on-chain at all?",
+    a: "Three things a database can't give you: settlement is final and automatic (the supplier gets paid, no disputes), the ledger is public (anyone audits the P&L at any block), and the rules live in the contract, not the AI — so the brain is swappable while the institution stays put.",
+  },
+];
+
+function Faq() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".faq-card", {
+        scrollTrigger: { trigger: ref.current, start: "top 80%" },
+        y: 24,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: "power2.out",
+      });
+    }, ref);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={ref} className="px-6 py-24 max-w-6xl mx-auto">
+      <div className="mb-10">
+        <div className="font-mono text-xs text-dim uppercase tracking-[0.3em] mb-2">
+          the obvious questions
+        </div>
+        <h2 className="text-4xl md:text-5xl font-bold">
+          No, really — <span className="text-ember">how does this work?</span>
+        </h2>
+      </div>
+      <div className="grid md:grid-cols-3 gap-4">
+        {FAQ.map((f) => (
+          <div key={f.q} className="faq-card bg-panel border border-line rounded-xl p-6">
+            <div className="font-mono text-sm text-amber mb-3">{f.q}</div>
+            <p className="text-sm text-cream/80 leading-relaxed">{f.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ---------------- marquee + footer ---------------- */
 
 function Marquee() {
@@ -482,6 +537,7 @@ export default function App() {
       <Shop state={state} fmt={fmt} />
       <Ledger state={state} fmt={fmt} flash={flash} />
       <Security />
+      <Faq />
       <Footer state={state} />
       {error && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-panel border border-ember/50 rounded-md px-4 py-2 font-mono text-xs text-ember z-50">
