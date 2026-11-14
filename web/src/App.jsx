@@ -464,12 +464,12 @@ function Footer({ state }) {
           </div>
         </div>
         <div className="font-mono text-xs text-dim space-y-1">
-          <div>contract: <span className="text-cream">{state?.contract || "tillshop.testnet"}</span></div>
+          <div>contract: <span className="text-cream">{state?.contract || "shop2.tillshop.testnet"}</span></div>
           <div>
             explorer:{" "}
             <a className="text-amber hover:underline" target="_blank" rel="noreferrer"
-              href="https://explorer.testnet.near.org/accounts/tillshop.testnet">
-              tillshop.testnet →
+              href={`https://explorer.testnet.near.org/accounts/${state?.contract || "shop2.tillshop.testnet"}`}>
+              {state?.contract || "shop2.tillshop.testnet"} →
             </a>
           </div>
           <div className="text-dim/60">testnet demo · nothing here is money</div>
