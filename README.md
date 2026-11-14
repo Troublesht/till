@@ -108,6 +108,29 @@ Open http://localhost:8787 — shelf, prices, stock, P&L and the on-chain decisi
 log are all live contract state. Buying an item signs a real transaction that
 lands on the testnet explorer.
 
+### Deploy on Vercel (full console, no always-on box)
+
+The static site reads the chain straight from the browser (FastNear allows
+cross-origin RPC). The one write path — "buy on-chain" — is a **serverless
+function** (`api/buy.js`) that signs the purchase with a testnet demo wallet.
+So the entire console, including live buying, runs on Vercel with **no
+long-running process**. The autonomous clerk keeps running wherever it can
+(local / any host) — but you do *not* need it online for the console to show
+live P&L or accept a purchase, because the shop's state is on-chain.
+
+```bash
+# 1. Import this repo at vercel.com/new  (root dir: project root)
+#    vercel.json wires it: build = npm --prefix web run build, output = docs/,
+#    api/ → serverless functions, / → index.html (SPA fallback)
+# 2. Set one env var on the Vercel project:
+#    TILL_CUSTOMER_KEY   =  <your testnet customer key, ed25519:base58>
+#    (optional) TILL_CONTRACT / TILL_CUSTOMER / NEAR_RPC — defaults match the live shop
+# 3. Deploy. Buy something — a real testnet transaction lands on the explorer.
+```
+
+`TILL_CUSTOMER_KEY` is a **testnet** demo credential: it lives only in Vercel
+project settings, is never committed, and never ships to the browser.
+
 ### Environment (`.env`)
 
 | var | meaning |
