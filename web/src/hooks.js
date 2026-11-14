@@ -20,24 +20,45 @@ async function rpcView(method, args = {}) {
   let lastErr;
   for (let i = 1; i <= 4; i++) {
     try {
+      // Raw NEAR JSON-RPC: `query` with request_type call_function.
+      // `args_base64` is the base64 of the JSON-encoded args ('' when none).
+      const argsJson = args == null ? "" : JSON.stringify(args);
+      const argsBase64 =
+        typeof btoa === "function"
+          ? btoa(unescape(encodeURIComponent(argsJson)))
+          : Buffer.from(argsJson, "utf8").toString("base64");
       const r = await fetch(DIRECT_RPC, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          jsonrpc: "2.0", id: 1, method: "call_function",
-          params: { account_id: DIRECT_CONTRACT, method_name: method, arguments: args },
+          jsonrpc: "2.0", id: 1, method: "query",
+          params: {
+            finality: "optimistic",
+            request_type: "call_function",
+            account_id: DIRECT_CONTRACT,
+            method_name: method,
+            args_base64: argsBase64,
+          },
         }),
       });
       const j = await r.json();
       if (j.error) throw new Error(j.error.name || "RPC error");
-      const b64 = j.result && j.result.result && j.result.result[0];
-      if (b64 == null) return null;
-      const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+      // FastNear returns `result.result` as an array of byte integers;
+      // some RPCs still return a base64 string — handle both.
+      const raw = j.result && j.result.result;
+      if (raw == null) return null;
+      let bytes;
+      if (Array.isArray(raw)) {
+        bytes = Uint8Array.from(raw, (b) => b & 0xff);
+      } else {
+        bytes = Uint8Array.from(atob(raw), (c) => c.charCodeAt(0));
+      }
       const txt = new TextDecoder("utf-8").decode(bytes);
       try { return JSON.parse(txt); } catch { return txt; }
     } catch (e) {
       lastErr = e;
-      const retryable = /429|503|rate|Failed to fetch/i.test(String(e.message || e));
+      const msg = String(e.message || e);
+      const retryable = /429|503|rate|Failed to fetch|timed? ?out/i.test(msg);
       if (!retryable || i === 4) throw e;
       await sleep(1200 * i);
     }
