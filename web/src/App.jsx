@@ -130,56 +130,41 @@ const BEATS = [
 
 function Story() {
   const ref = useRef(null);
-  const pinRef = useRef(null);
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top top",
-          end: "+=380%",
-          pin: pinRef.current,
-          scrub: 1,
-        },
-      });
-      BEATS.forEach((_, i) => {
-        if (i === 0) return;
-        tl.to(`.beat-${i - 1}`, { opacity: 0, y: -40, duration: 1 }, i - 1)
-          .fromTo(`.beat-${i}`, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1 }, i - 0.6);
+      // Staggered reveal on scroll — deliberately NOT pinned: pinned scrubs
+      // leave cards floating over later sections when the page is jumped via
+      // an anchor link (#ledger), which judges do a lot.
+      gsap.from(".beat", {
+        scrollTrigger: { trigger: ref.current, start: "top 78%" },
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "power2.out",
       });
     }, ref);
     return () => ctx.revert();
   }, []);
 
   return (
-    <section ref={ref} className="h-screen relative">
-      <div ref={pinRef} className="h-full flex items-center justify-center px-6">
-        <div className="w-full max-w-3xl">
-          <div className="font-mono text-xs text-dim uppercase tracking-[0.3em] mb-10 text-center">
-            how the company of zero works
+    <section ref={ref} className="px-6 py-24 max-w-3xl mx-auto">
+      <div className="font-mono text-xs text-dim uppercase tracking-[0.3em] mb-10 text-center">
+        how the company of zero works
+      </div>
+      <div className="space-y-6">
+        {BEATS.map((b) => (
+          <div key={b.n} className="beat bg-panel border border-line rounded-xl p-8 md:p-10">
+            <div className="flex items-baseline gap-4">
+              <span className="font-mono text-amber text-sm">{b.n}</span>
+              <h3 className="text-2xl md:text-3xl font-semibold">{b.title}</h3>
+            </div>
+            <p className="text-dim mt-4 leading-relaxed text-lg">{b.body}</p>
+            <div className="mt-6">
+              <Tag tone="border-amber/40 text-amber">{b.tag}</Tag>
+            </div>
           </div>
-          <div className="relative h-[420px]">
-            {BEATS.map((b, i) => (
-              <div key={b.n} className={`beat-${i} absolute inset-x-0 top-0 ${i > 0 ? "opacity-0" : ""}`}>
-                <div className="bg-panel border border-line rounded-xl p-8 md:p-10">
-                  <div className="flex items-baseline gap-4">
-                    <span className="font-mono text-amber text-sm">{b.n}</span>
-                    <h3 className="text-2xl md:text-3xl font-semibold">{b.title}</h3>
-                  </div>
-                  <p className="text-dim mt-4 leading-relaxed text-lg">{b.body}</p>
-                  <div className="mt-6">
-                    <Tag tone="border-amber/40 text-amber">{b.tag}</Tag>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-center gap-1.5 mt-8">
-            {BEATS.map((b, i) => (
-              <span key={i} className="w-8 h-1 rounded bg-line" />
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );
