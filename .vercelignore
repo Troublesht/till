@@ -1,0 +1,8 @@
+# Vercel upload exclusions
+contract/target
+node_modules
+web/node_modules
+.env
+*.log
+test_*.js
+scratch

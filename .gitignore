@@ -6,3 +6,4 @@ keys/
 bin/
 contract/target/
 web/dist/
+test_*.js
