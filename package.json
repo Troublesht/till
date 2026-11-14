@@ -1,0 +1,21 @@
+{
+  "name": "till",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "node scripts/deploy.js",
+    "clerk": "node clerk/index.js",
+    "server": "node server/index.js",
+    "web:build": "npm --prefix web run build",
+    "contract:build": "cargo build --target wasm32-unknown-unknown --release --manifest-path contract/Cargo.toml",
+    "demo": "node scripts/demo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "near-api-js": "6.5.1"
+  }
+}

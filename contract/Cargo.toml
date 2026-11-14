@@ -1,0 +1,20 @@
+[package]
+name = "till"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = false
+panic = "abort"
+lto = true
+debug-assertions = false
+
+[dependencies]
+near-sdk = "=5.20.0"
+borsh = "1"
+serde = { version = "1", features = ["derive"] }
