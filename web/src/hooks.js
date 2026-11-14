@@ -155,11 +155,22 @@ export function useTill() {
 }
 
 export async function buyOnChain(id, qty) {
-  const r = await fetch("/api/buy", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, qty }),
-  });
+  let r;
+  try {
+    r = await fetch("/api/buy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, qty }),
+    });
+  } catch {
+    throw new Error("buying needs the companion server (npm run server)");
+  }
+  // Static hosts (GitHub Pages / Vercel) answer with their HTML 404 page —
+  // not our JSON API — so detect that and say what's actually missing.
+  const ct = r.headers.get("content-type") || "";
+  if (!ct.includes("json")) {
+    throw new Error("buying needs the companion server (npm run server)");
+  }
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || "purchase failed");
   return j;

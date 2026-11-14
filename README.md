@@ -6,6 +6,7 @@ on NEAR testnet**. The owner sets the rules once; the contract enforces them;
 the chain is the ledger. No database, no back-office, nothing to hide behind.
 
 **Live on testnet:** [`shop2.tillshop.testnet`](https://explorer.testnet.near.org/accounts/shop2.tillshop.testnet)
+**Live web console (reads the chain straight from your browser):** https://troublesht.github.io/till/
 
 The web console reads everything straight from the contract at each block. Buy
 something in the demo and a real signed transaction lands on the testnet
